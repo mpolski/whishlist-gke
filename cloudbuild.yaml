@@ -1,11 +1,11 @@
 steps:
 # build the container image
 - name: "gcr.io/cloud-builders/docker"
-  args: ["build", "-t", "europe-central2-docker.pkg.dev/calm-drive-303114/whishlist/whishlist-frontend", "."] 
+  args: ["build", "-t", "europe-central2-docker.pkg.dev/calm-drive-303114/whishlist/whishlist-frontend:$SHORT_SHA", "."] 
 
 # push container image
 - name: "gcr.io/cloud-builders/docker"
-  args: ["push", "europe-central2-docker.pkg.dev/calm-drive-303114/whishlist/whishlist-frontend"]
+  args: ["push", "europe-central2-docker.pkg.dev/calm-drive-303114/whishlist/whishlist-frontend:$SHORT_SHA"]
 
 # deploy container image to GKE
 - name: "gcr.io/cloud-builders/gke-deploy"
