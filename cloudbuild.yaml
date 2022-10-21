@@ -1,0 +1,17 @@
+steps:
+# build the container image
+- name: "gcr.io/cloud-builders/docker"
+  args: ["build", "-t", "europe-central2-docker.pkg.dev/calm-drive-303114/whishlist:1.0.1", "."] 
+
+# push container image
+- name: "gcr.io/cloud-builders/docker"
+  args: ["push", "europe-central2-docker.pkg.dev/calm-drive-303114/whishlist:1.0.1"]
+
+# deploy container image to GKE
+- name: "gcr.io/cloud-builders/gke-deploy"
+  args:
+  - run
+  - --filename=whishlist-frontend.yaml
+  - --location=europe-central2
+  - --cluster=autopilot-cluster
+
