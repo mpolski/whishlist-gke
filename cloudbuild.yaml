@@ -12,6 +12,7 @@ steps:
   args:
   - run
   - --filename=whishlist-frontend.yaml
+  - --image=europe-central2-docker.pkg.dev/calm-drive-303114/whishlist/whishlist-frontend:$SHORT_SHA
   - --location=europe-central2
   - --cluster=autopilot-cluster
 
