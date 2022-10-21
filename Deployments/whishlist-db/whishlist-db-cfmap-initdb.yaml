@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-initdb-config
+  labels:
+    app: whishlist
+data:
+  initdb.sql: |
+    CREATE TABLE IF NOT EXISTS whishlist (id SERIAL PRIMARY KEY, person VARCHAR(256), present VARCHAR(1024), budget INTEGER);

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>My Whish List For Santa</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/skeleton.css">
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="images/favicon.png">
+
+  <style>
+  </style>
+
+</head>
+<body>
+
+  <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <div class="container">
+    <div class="row">
+    <!--1st column-->
+    <div class="one-half column" style="margin-top: 15%">
+      <h4>Let's help Santa</h4>
+      <h5>Fill in the form, don't be shy!</h5>
+      <form action="/presents" method="post">
+          <div class="row">
+            <div class="six columns">
+              <label for="person">Your Name</label>
+              <input class="u-full-width" placeholder="Joe" required name="person">
+            </div>
+          </div>
+        <label for="present">Your Present</label>
+        <textarea class="u-full-width" placeholder="A new boat..." required name="present"></textarea>
+        <div class="row">
+          <div class="six columns">
+            <label for="budget">Budget ($)</label>
+            <input class="u-full-width" type="number" placeholder="50" required name="budget">
+          </div>
+        </div>
+        <input class="button-primary" type="submit" value="Submit">
+      </form>
+    </div>
+    <!--2nd column-->
+    <div class="one-half column" style="margin-top: 15%">
+      <h4>Here's the list...</h4>
+      <h5>...from Santa's point of view.</h5>
+      <table class="u-full-width">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Present</th>
+            <th>Budget ($)</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+    
+    <!--3rd column - dynamically generated-->
+    <div class="one-half column" style="margin-top: 15%">
+      <script>
+          presentsTable = document.querySelector("table")
+      
+          /*
+          Use the browsers `fetch` API to make a GET call to /presents
+          We expect the response to be a JSON list of presents
+          */
+
+          fetch("/presents")
+            .then(response => response.json())
+            .then(presentsList => {
+              //Iterate over the list
+              presentsList.forEach(item => {
+                // Create the table row
+                row = document.createElement("tr")
+      
+                // Create the table data elements for person and present columns
+                person = document.createElement("td")
+                person.innerHTML = item.person
+                budget = document.createElement("td")
+                budget.innerHTML = item.budget
+                present = document.createElement("td")
+                present.innerHTML = item.present
+      
+                // Add the data elements to the row
+                row.appendChild(person)
+                row.appendChild(present)
+                row.appendChild(budget)
+                // Finally, add the row element to the table itself
+                presentsTable.appendChild(row)
+              })
+            })
+        
+        // Add an adjecent table with a row for Total amount
+        totalBudgetTable = document.querySelector("table")
+        
+        fetch("/totalbudget")
+        .then(response => response.json())
+        .then(totalBudgetList => {
+          totalBudgetList.forEach(item => {
+            row = document.createElement("tr")
+ 
+            grand = document.createElement("td")
+            grand.innerHTML = "<strong>TOTAL</strong>"
+            whiteSpace = document.createElement("td")
+            whiteSpace.innerHTML = "&nbsp;"
+            total = document.createElement("td")
+            total.innerHTML = "<strong>" + item.total + "</strong>"
+            
+            row.appendChild(grand)
+            row.appendChild(whiteSpace)
+            row.appendChild(total)
+            
+            totalBudgetTable.appendChild(row)
+            })
+          })
+      </script>
+    </div>
+  </div>
+</div>
+<!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+</body>
+</html>

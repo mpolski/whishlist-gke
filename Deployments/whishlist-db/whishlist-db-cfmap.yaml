@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: whishlist-db
+  labels:
+    app: whishlist
+data:
+  postgresql.conf: |
+    config_file=/etc/postgresql/postgresql.conf
+  POSTGRES_DB: postgres_db
+  POSTGRES_USER: postgres_user
+  POSTGRES_PASSWORD: postgres
+

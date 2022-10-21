@@ -1,0 +1,16 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: sc-nimble
+  labels:
+    app: whitelist
+provisioner: hpe.com/nimble
+parameters:
+  allowOverrides: importVol,forceImport,takeover,reverseRepl,description,perfPolicy
+  protectionTemplate: "test-protectiontemplate"
+  syncOnUnmount: "true"
+  destroyOnRm: "false"
+  perfPolicy: "SQL Server"
+  nameSuffix: ".whishlist"
+
+# See more parameters at https://scod.hpedev.io/flexvolume_driver/container_provider/#storageclass_parameters

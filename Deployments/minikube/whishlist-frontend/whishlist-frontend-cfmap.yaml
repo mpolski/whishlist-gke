@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: whishlist-db-connstr
+  labels:
+    app: whishlist
+data:
+  PG_CONNSTRING: postgres://postgres_user:postgres@whishlist-db/postgres_db?sslmode=disable

@@ -1,0 +1,104 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: sc-nimble
+  labels:
+    app: whitelist
+provisioner: hpe.com/nimble
+parameters:
+  allowOverrides: importVol,forceImport,takeover,reverseRepl,description,perfPolicy
+  protectionTemplate: "test-protectiontemplate"
+  syncOnUnmount: "true"
+  destroyOnRm: "false"
+  perfPolicy: "SQL Server"
+  nameSuffix: ".whishlist"
+
+# See more parameters at https://scod.hpedev.io/flexvolume_driver/container_provider/#storageclass_parameters
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: whishlist-db-pvc-nimble
+  labels:
+    app: whitelist
+  annotations:
+    hpe.com/description: "My volume to be transitioned"
+    hpe.com/perfPolicy: "SQL Server"
+spec:
+  accessModes: [ "ReadWriteOnce" ]
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: sc-nimble 
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: whishlist-db
+  labels:
+    app: whishlist
+data:
+  postgresql.conf: |
+    config_file=/etc/postgresql/postgresql.conf
+  POSTGRES_DB: postgres_db
+  POSTGRES_USER: postgres_user
+  POSTGRES_PASSWORD: postgres
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-initdb-config
+  labels:
+    app: whishlist
+data:
+  initdb.sql: |
+    CREATE TABLE IF NOT EXISTS whishlist (id SERIAL PRIMARY KEY, person VARCHAR(256), present VARCHAR(1024), budget INTEGER);
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: whishlist-db
+spec:
+  selector:
+    app: whishlist
+  type: NodePort
+  ports:
+  - port: 5432
+    targetPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: whishlist-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: whishlist
+  template:
+    metadata:
+      labels:
+        app: whishlist
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:10.12
+        imagePullPolicy: "IfNotPresent"
+        ports:
+          - containerPort: 5432
+        envFrom:
+          - configMapRef:
+              name: whishlist-db
+        volumeMounts:
+        - name: initdb
+          mountPath: /docker-entrypoint-initdb.d
+        - name: data
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: initdb
+        configMap:
+          name: postgres-initdb-config
+      - name: data
+        persistentVolumeClaim:
+          claimName: whishlist-db-pvc-nimble 
+
